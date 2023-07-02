@@ -16,22 +16,50 @@ public:
     }
 
 
-    inline Tokens tokenize(std::wstring expr) {
-        if (expr.empty()){
-            return {};
-        }
-        else if (std::all_of(expr.cbegin(), expr.cend(), std::isdigit)) {
-            Token token{TokenType::Number, expr};
-            return {token};
-        }
-        else if (std::any_of(expr.cbegin(), expr.cend(), is_operator)) {
-            Token token{TokenType::Operator, expr};
-            return {token};
+    inline Tokens tokenize(const std::wstring &expr) {
+        Tokens tokens{};
+        if (expr.empty()) { 
+            return tokens;
         }
         else {
-            Token token{TokenType::Name, expr};
-            return {token};
+            std::wstring word = L"";
+            TokenType type = TokenType::Unknown;
+            for (const wchar_t &ch : expr) {
+                if (is_operator(ch)) {
+                    type = TokenType::Operator;
+                    word += ch;
+                    tokens.push_back(Token{type, word});
+                    word = L"";
+                }
+                else if (ch == L' ' && !word.empty()) {
+                    type = get_type(word);
+                    tokens.push_back(Token{type, word});
+                    word = L"";
+                }
+                else {
+                    word += ch;
+                }
+            }
+            if (!word.empty()) {
+                type = get_type(word);
+                tokens.push_back(Token{type, word});
+            }
+            return tokens;
         }
     }
 
+private:
+    TokenType get_type(std::wstring word) {
+        if (std::all_of(word.cbegin(), word.cend(), std::isdigit)) {
+            return TokenType::Int;
+        } 
+        else if (!std::isdigit(word[0])) {
+            return TokenType::Name;
+        } 
+        else {
+            return TokenType::Unknown;
+        }
+    }
 };
+
+

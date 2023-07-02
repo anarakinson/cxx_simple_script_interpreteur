@@ -5,8 +5,10 @@
 
 enum class TokenType {
     Operator,
-    Number,
+    Int,
+    Float,
     Name,
+    Unknown,
 };
 
 
@@ -23,6 +25,7 @@ public:
     Token(TokenType type, std::wstring data) : m_type{type}, m_data{data} {}
 
     TokenType type() const { return m_type; }
+    std::wstring data() const { return m_data; }
 
 private: 
     TokenType m_type;

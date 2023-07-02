@@ -7,19 +7,22 @@
 
 
 
-void print_type(TokenType type) {
+std::string get_type(TokenType type) {
     switch (type) {
         case TokenType::Operator:
-            std::cout << "operator" << std::endl;
+            return "operator";
             break;
-        case TokenType::Number:
-            std::cout << "number" << std::endl;
+        case TokenType::Int:
+            return "integer";
+            break;
+        case TokenType::Float:
+            return "float";
             break;
         case TokenType::Name:
-            std::cout << "name" << std::endl;
+            return "name";
             break;
         default:
-            std::cout << "unknown" << std::endl;  
+            return "unknown";  
     }
 }
 
@@ -31,15 +34,24 @@ int main() {
     Lexer lexer{};
     Parser parser{};
 
-    std::wstring examples[] = {L"123", L"+", L"ASDF"};
+    std::wstring examples[] = {L"123", L"+", L"ASDF", L"M123", L"123M", L"1 + asd"};
 
     for (auto exam : examples) {
         Tokens tokens = lexer.tokenize(exam);
         
-        Token token = tokens[0];
-        TokenType type = token.type();
-        
-        std::wcout << exam << " - ";
-        print_type(type);
+        std::wcout << exam << L" >>> ";
+
+        if (tokens.empty()) {
+            std::cout << "empty" << std::endl;
+        }
+        else {
+            for (const auto &token : tokens) {
+                TokenType type = token.type();
+                std::wstring data = token.data();
+                std::wcout << data << L" - ";
+                std::cout << get_type(type) << " ; ";
+            }
+            std::cout << std::endl;
+        }
     }
 }
