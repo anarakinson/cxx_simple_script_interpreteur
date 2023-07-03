@@ -20,6 +20,10 @@ public:
                 break;
             case TokenType::Operator: 
                 if (stack.empty()) {
+                    if (
+                        !(token.data()[0] == static_cast<wchar_t>(Operator::RBrace)) &&
+                        !(token.data()[0] == static_cast<wchar_t>(Operator::LBrace)) 
+                    )
                     stack.push_back(token); 
                 }
                 else if (
@@ -28,12 +32,20 @@ public:
                 ) {
                     output.push_back(stack.back());
                     stack.pop_back();
+                    if (
+                        !(token.data()[0] == static_cast<wchar_t>(Operator::RBrace)) &&
+                        !(token.data()[0] == static_cast<wchar_t>(Operator::LBrace)) 
+                    )
                     stack.push_back(token);
                 }
                 else if (
                     get_priority(stack[stack.size() - 1].data()) < get_priority(token.data()) || 
                     token.data()[0] == static_cast<wchar_t>(Operator::LBrace)
                 ) {
+                    if (
+                        !(token.data()[0] == static_cast<wchar_t>(Operator::RBrace)) &&
+                        !(token.data()[0] == static_cast<wchar_t>(Operator::LBrace)) 
+                    )
                     stack.push_back(token);
                 }
                 else {
