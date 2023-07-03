@@ -39,7 +39,7 @@ public:
     TokenType type() const { return m_type; }
     std::wstring data() const { return m_data; }
 
-    void increase_priority(int value = 0) { m_priority += value; }
+    void set_priority(int value = 0) { m_priority = value; }
     int priority() { return m_priority; }
 
 private: 

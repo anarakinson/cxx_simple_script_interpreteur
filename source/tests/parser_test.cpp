@@ -15,9 +15,11 @@ void Tests::parser_test() {
 
     std::wstring examples[] = {
         L"", 
-        L"1", 
-        L"1 + 2", 
-        L"(1 + 2) * 3"
+        L"1",           // [ 1 ]
+        L"1 + 2",       // [ 1 2 + ]
+        L"1 + 2 * 3",   // [ 1 2 3 * + ]
+        L"1 * 2 + 3",   // [ 1 2 * 3 + ]
+        L"(1 + 2) * 3"  // [ 1 2 + 3 * ]
     };
 
     for (const auto &exam : examples) {
@@ -29,13 +31,12 @@ void Tests::parser_test() {
             std::cout << "empty" << std::endl;
         }
         else {
+            std::cout << "[ ";
             for (const auto &token : parsed) {
-                TokenType type = token.type();
                 std::wstring data = token.data();
-                std::wcout << data << L" - ";
-                std::cout << get_type(type) << " ; ";
+                std::wcout << data << L" ";
             }
-            std::cout << std::endl;
+            std::cout << "]" << std::endl;
         }
     }
 }

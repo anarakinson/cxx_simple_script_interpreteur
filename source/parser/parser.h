@@ -9,34 +9,60 @@ class Parser {
 public:
 
     Tokens parse(const Tokens &tokens) { 
+
         Tokens output{};
         Tokens stack{};
 
-        auto pop_all = [&]() { while(!stack.empty()) {
+        for (const auto &token : tokens) {
+            switch (token.type()) {
+            case TokenType::Int: 
+                output.push_back(token); 
+                break;
+            case TokenType::Operator: 
+                if (stack.empty()) {
+                    stack.push_back(token); 
+                }
+                else if (
+                    get_priority(stack[stack.size() - 1].data()) > get_priority(token.data()) || 
+                    token.data()[0] == static_cast<wchar_t>(Operator::RBrace)
+                ) {
+                    output.push_back(stack.back());
+                    stack.pop_back();
+                    stack.push_back(token);
+                }
+                else if (
+                    get_priority(stack[stack.size() - 1].data()) < get_priority(token.data()) || 
+                    token.data()[0] == static_cast<wchar_t>(Operator::LBrace)
+                ) {
+                    stack.push_back(token);
+                }
+                else {
+                    output.push_back(token);
+                }
+                break;
+            case TokenType::Name: 
+                output.push_back(token); 
+                break;
+            }
+        }
+        while (!stack.empty()) {
             output.push_back(stack.back());
             stack.pop_back();
-        }};
-
-        for(const Token &token : tokens) {
-            if(token.type() == TokenType::Operator) {
-                pop_all();
-                stack.push_back(token);
-                continue;
-            }
-            output.push_back(token);
         }
-        pop_all();
 
-        return output; 
+        return output;
+
     }
 
 private:
-    void set_priority(Token token) {
-
-        switch (token.type()) {
-            case TokenType::Operator
-        }
-
+    int get_priority(std::wstring data) {
+        if (
+            data[0] == static_cast<wchar_t>(Operator::Div) ||
+            data[0] == static_cast<wchar_t>(Operator::Mul)
+        ) { return 1; }
+        return 0;
     }
+
+    int m_holdover = 0;
 
 };
