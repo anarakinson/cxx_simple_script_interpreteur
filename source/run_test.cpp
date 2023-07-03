@@ -1,16 +1,18 @@
-#include "lexer_test.h"
+#include <interpreteur_tests.h>
 
-#include <lexer.h>
-#include <parser.h>
+// #include <lexer.h>
+// #include <parser.h>
 
-#include <iostream>
-#include <string>
-#include <algorithm>
+// #include <iostream>
+// #include <string>
+// #include <algorithm>
 
 
 
 int main() {
 
-    lexer_test();
+    // Tests::lexer_test();
+
+    Tests::parser_test();
 
 }

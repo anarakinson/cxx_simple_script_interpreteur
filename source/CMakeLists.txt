@@ -7,13 +7,18 @@ project(interpreteur)
 add_executable(
     main
     run_test.cpp 
+    tests/lexer_test.cpp 
+    tests/parser_test.cpp 
+    lexer/lexer.cpp
 )
 
-include_directories(
+target_include_directories(
+    main
+    PUBLIC  
     lexer 
     parser 
-    PUBLIC  
-    ${CMAKE_CURRENT_BINARY_DIR}
+    tests
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(
