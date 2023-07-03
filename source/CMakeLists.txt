@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 
-project(interpreter)
+project(interpreteur)
 
 
 add_executable(
@@ -11,7 +11,7 @@ add_executable(
 
 include_directories(
     lexer 
-    parser     
+    parser 
     PUBLIC  
     ${CMAKE_CURRENT_BINARY_DIR}
 )

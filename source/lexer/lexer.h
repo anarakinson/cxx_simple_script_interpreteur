@@ -11,55 +11,80 @@ typedef std::vector<Token> Tokens;
 
 class Lexer {
 public:
-    Lexer() {
-        std::cout << "lexer" << std::endl;
-    }
-
 
     inline Tokens tokenize(const std::wstring &expr) {
         Tokens tokens{};
-        if (expr.empty()) { 
-            return tokens;
-        }
-        else {
+        
+        if (!expr.empty()) { 
             std::wstring word = L"";
             TokenType type = TokenType::Unknown;
+
             for (const wchar_t &ch : expr) {
-                if (is_operator(ch)) {
-                    type = TokenType::Operator;
-                    word += ch;
-                    tokens.push_back(Token{type, word});
-                    word = L"";
+
+                if (!parsing_string) {
+                    if (is_operator(word)) {
+                        type = TokenType::Operator;
+                        tokens.push_back(Token{type, word});
+                        word = L"";
+                    }
+                    else if (ch == L' ' && !word.empty()) {
+                        if (type != TokenType::String) { type = get_type(word); }
+                        tokens.push_back(Token{type, word});
+                        word = L"";
+                    }
+                    else if (ch == '"') {
+                        parsing_string = true;
+                        word += ch;
+                    }
+                    else {
+                        word += ch;
+                    }
                 }
-                else if (ch == L' ' && !word.empty()) {
-                    type = get_type(word);
-                    tokens.push_back(Token{type, word});
-                    word = L"";
-                }
-                else {
+                else if (parsing_string) {
                     word += ch;
+                    if (ch == '"') {
+                        parsing_string = false;
+                        type = TokenType::String;
+                    }
                 }
             }
             if (!word.empty()) {
                 type = get_type(word);
                 tokens.push_back(Token{type, word});
             }
-            return tokens;
         }
+        return tokens;
     }
 
 private:
     TokenType get_type(std::wstring word) {
+        TokenType out = TokenType::Unknown;
+        // check integer
         if (std::all_of(word.cbegin(), word.cend(), std::isdigit)) {
-            return TokenType::Int;
-        } 
-        else if (!std::isdigit(word[0])) {
-            return TokenType::Name;
-        } 
-        else {
-            return TokenType::Unknown;
+            out = TokenType::Int;
         }
+        // check name
+        else if (!std::isdigit(word[0])) {
+            out = TokenType::Name;
+        } 
+        // check float
+        else if (std::isdigit(word[0])) {
+            bool correct = true;
+            for (const wchar_t ch : word) {
+                if (ch == '.' && correct) {
+                    correct = false;
+                    out = TokenType::Float;
+                } else if (!isdigit(ch)) {
+                    out = TokenType::Unknown;
+                    break;
+                }
+            }
+        }
+
+        return out;
     }
+
+    bool parsing_string = false;
 };
 
 

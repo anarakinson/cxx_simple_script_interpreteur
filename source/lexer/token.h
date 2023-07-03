@@ -2,22 +2,32 @@
 
 
 #include <string>
+#include <vector>
+
 
 enum class TokenType {
     Operator,
     Int,
     Float,
+    String,
     Name,
     Unknown,
 };
 
 
-enum class Operator : wchar_t {
-    Plus = L'+',
-    Minus = L'-',
-    Product = L'*',
-    Division = L'/',
-};
+namespace Operator {
+    std::wstring Plus = L"+";
+    std::wstring Minus = L"-";
+    std::wstring Product = L"*";
+    std::wstring Division = L"/";
+
+    std::vector values{
+        Plus,
+        Minus,
+        Product,
+        Division
+    };
+}; // end Operator
 
 
 class Token {
@@ -32,21 +42,11 @@ private:
     std::wstring m_data;
 };
 
-bool is_operator(wchar_t ch) {
-    switch (ch) {
-        case Operator::Plus:
+bool is_operator(const std::wstring &word) {
+    for (const auto &op : Operator::values) {
+        if (word == op) {
             return true;
-            break;
-        case Operator::Minus:
-            return true;
-            break;
-        case Operator::Division:
-            return true;
-            break;
-        case Operator::Product:
-            return true;
-            break;
-        default:
-            return false; 
+        }
     }
+    return false;
 }
