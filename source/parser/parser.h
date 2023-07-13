@@ -6,73 +6,75 @@
 
 
 class Parser {
-public:
+public: 
 
     Tokens parse(const Tokens &tokens) { 
 
-        Tokens output{};
-        Tokens stack{};
+        m_output.clear();
+        m_stack.clear();
 
         for (const auto &token : tokens) {
             switch (token.type()) {
             case TokenType::Int: 
-                output.push_back(token); 
+                m_output.push_back(token); 
                 break;
             case TokenType::Operator: 
-                if (stack.empty()) {
-                    if (
-                        !(token.data()[0] == static_cast<wchar_t>(Operator::RBrace)) &&
-                        !(token.data()[0] == static_cast<wchar_t>(Operator::LBrace)) 
-                    )
-                    stack.push_back(token); 
+                if (
+                    m_stack.empty() || 
+                    get_priority(m_stack[m_stack.size() - 1]) < get_priority(token) || 
+                    check_brace(token, Operator::LBrace)
+                ) {
+                    update_stack(token);
                 }
                 else if (
-                    get_priority(stack[stack.size() - 1].data()) > get_priority(token.data()) || 
-                    token.data()[0] == static_cast<wchar_t>(Operator::RBrace)
+                    get_priority(m_stack[m_stack.size() - 1]) > get_priority(token) || 
+                    check_brace(token, Operator::RBrace)
                 ) {
-                    output.push_back(stack.back());
-                    stack.pop_back();
-                    if (
-                        !(token.data()[0] == static_cast<wchar_t>(Operator::RBrace)) &&
-                        !(token.data()[0] == static_cast<wchar_t>(Operator::LBrace)) 
-                    )
-                    stack.push_back(token);
-                }
-                else if (
-                    get_priority(stack[stack.size() - 1].data()) < get_priority(token.data()) || 
-                    token.data()[0] == static_cast<wchar_t>(Operator::LBrace)
-                ) {
-                    if (
-                        !(token.data()[0] == static_cast<wchar_t>(Operator::RBrace)) &&
-                        !(token.data()[0] == static_cast<wchar_t>(Operator::LBrace)) 
-                    )
-                    stack.push_back(token);
+                    m_output.push_back(m_stack.back());
+                    m_stack.pop_back();
+                    update_stack(token);
                 }
                 else {
-                    output.push_back(token);
+                    m_output.push_back(token);
                 }
                 break;
             case TokenType::Name: 
-                output.push_back(token); 
+                m_output.push_back(token); 
                 break;
             }
         }
-        while (!stack.empty()) {
-            output.push_back(stack.back());
-            stack.pop_back();
+        // move operators from stack to output
+        while (!m_stack.empty()) {
+            m_output.push_back(m_stack.back());
+            m_stack.pop_back();
         }
 
-        return output;
+        return m_output;
 
     }
 
 private:
-    int get_priority(std::wstring data) {
+    Tokens m_output{};
+    Tokens m_stack{};
+
+    int get_priority(const Token &token) {
         if (
-            data[0] == static_cast<wchar_t>(Operator::Div) ||
-            data[0] == static_cast<wchar_t>(Operator::Mul)
+            token.data()[0] == static_cast<wchar_t>(Operator::Div) ||
+            token.data()[0] == static_cast<wchar_t>(Operator::Mul)
         ) { return 1; }
         return 0;
+    }
+
+    void update_stack(const Token &token) {
+        if (
+            !(token.data()[0] == static_cast<wchar_t>(Operator::RBrace)) &&
+            !(token.data()[0] == static_cast<wchar_t>(Operator::LBrace)) 
+        )
+        m_stack.push_back(token); 
+    }
+
+    bool check_brace(const Token &token, const Operator &op) {
+        return token.data()[0] == static_cast<wchar_t>(op);
     }
 
     int m_holdover = 0;
