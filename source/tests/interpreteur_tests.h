@@ -2,6 +2,7 @@
 
 #include <lexer.h>
 #include <parser.h>
+#include <executor.h>
 
 
 
@@ -12,5 +13,8 @@ namespace Tests {
 
     // parser 
     void parser_test();
+
+    // executioner 
+    void executor_test();
 
 } // end Tests

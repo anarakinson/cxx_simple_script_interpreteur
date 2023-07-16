@@ -9,7 +9,11 @@ add_executable(
     run_test.cpp 
     tests/lexer_test.cpp 
     tests/parser_test.cpp 
+    tests/executor_test.cpp 
+
     lexer/lexer.cpp
+    parser/parser.h
+    executor/executor.h
 )
 
 target_include_directories(
@@ -17,6 +21,7 @@ target_include_directories(
     PUBLIC  
     lexer 
     parser 
+    executor 
     tests
     ${CMAKE_CURRENT_SOURCE_DIR}
 )

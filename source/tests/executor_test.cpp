@@ -5,13 +5,13 @@
 #include <algorithm>
 
 
-void Tests::parser_test() {
+void Tests::executor_test() {
     
     std::cout << "START" << std::endl;
 
     Lexer lexer{};
     Parser parser{};
-
+    Executor executor{};
 
     std::wstring examples[] = {
         L"", 
@@ -20,11 +20,16 @@ void Tests::parser_test() {
         L"1 + 2 * 3",                 // [ 1 2 3 * + ]
         L"1 * 2 + 3",                 // [ 1 2 * 3 + ]
         L"(1 + 2) * 3",               // [ 1 2 + 3 * ]
+        L"1 * 2 + 2 * 3",             
+        L"1 * 2 - 2 * 3",             
         L"1 * 2 + 2 * 3 - 3 / 4",     // [ 1 2 * 2 3 * 3 4 / - + ]
-        L"2 * (3 + 2) * (3 - 2) / 4"  // [  ]
+        L"1 * (2 + 2) * (3 - 3) / 4"  // [ 1 2 * 2 3 * 3 4 / - + ]
     };
 
     for (const auto &exam : examples) {
+        
+        std::wcout << exam << std::endl;
+
         Tokens tokens = lexer.tokenize(exam);
 
         Tokens parsed = parser.parse(tokens);
@@ -33,12 +38,16 @@ void Tests::parser_test() {
             std::cout << "empty" << std::endl;
         }
         else {
-            std::cout << "[ ";
+                std::cout << "[ ";
             for (const auto &token : parsed) {
                 std::wstring data = token.data();
                 std::wcout << data << L" ";
             }
             std::cout << "]" << std::endl;
+        
+            std::wstring computed = executor.execute(parsed);
+            std::wcout << computed << std::endl;
         }
     }
+
 }

@@ -42,6 +42,10 @@ public:
     void set_priority(int value = 0) { m_priority = value; }
     int priority() { return m_priority; }
 
+    wchar_t to_operator() const {
+        return static_cast<wchar_t>(m_data[0]);
+    }
+
 private: 
     TokenType m_type;
     std::wstring m_data;

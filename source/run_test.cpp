@@ -13,6 +13,8 @@ int main() {
 
     // Tests::lexer_test();
 
-    Tests::parser_test();
+    // Tests::parser_test();
+
+    Tests::executor_test();
 
 }
